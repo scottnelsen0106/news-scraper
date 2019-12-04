@@ -38,11 +38,21 @@ app.get("/scrape", function(req, res) {
     axios.get("https://www.npr.org").then(function(response) {
         var $ = cheerio.load(response.data);
 
-        $(".stories-wrap").each(function(index, element) {
+        $(".story-text").each(function(index, element) {
           var result = {};
           result.title = $(this)
           .find("h3.title")
           .text()
+
+          result.link = $(this)
+          .find("a")
+          .attr("href")
+          
+
+          result.summary = $(this)
+          .find("p.teaser")
+          .text();
+
           console.log(result);
         })
         
