@@ -6,7 +6,7 @@ var axios = require("axios");
 var cheerio = require("cheerio");
 var db = require("./models");
 
-var PORT = process.env.PORT || 3000;
+var PORT = process.env.PORT || 8000;
 
 var app = express();
 
@@ -27,13 +27,25 @@ var exphbs = require("express-handlebars");
 app.engine('handlebars', exphbs({defaultLayout: "main"}));
 app.set('view engine', 'handlebars');
 
-mongoose.connect(MONGODB_URI);
+mongoose.connect(MONGODB_URI, {
+  useCreateIndex: true,
+  useNewUrlParser: true
+});
 
 //Get route
 
 app.get("/scrape", function(req, res) {
-    axios.get("https://www.npr.org/sections/news/").then(function(response) {
+    axios.get("https://www.npr.org").then(function(response) {
         var $ = cheerio.load(response.data);
+
+        $(".stories-wrap").each(function(index, element) {
+          var result = {};
+          result.title = $(this)
+          .find("h3.title")
+          .text()
+          console.log(result);
+        })
+        
     })
 })
 
