@@ -1,42 +1,42 @@
-var bodyParser = require("body-parser");
-var mongoose = require("mongoose");
-var logger = require("morgan");
-
 var express = require("express");
+var logger = require("morgan");
+var mongoose = require("mongoose");
+var bodyParser = require("body-parser");
+var axios = require("axios");
+var cheerio = require("cheerio");
+var db = require("./models");
+
+var PORT = process.env.PORT || 3000;
+
 var app = express();
 
-app.use(logger("dev"));
-app.use(
-  bodyParser.urlencoded({
-    extended: false
-  })
-);
 
-app.use(express.static(process.cwd() + "/public"));
+app.use(logger("dev"));
+
+app.use(express.urlencoded({ extended: true}));
+app.use(express.json());
+
+app.use(express.static("public"));
+
+
+// mongoose.connect("mongodb://localhost/news-scraper", { useNewUrlParser: true })
+
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/news-scraper";
 
 var exphbs = require("express-handlebars");
-app.engine(
-  "handlebars",
-  exphbs({
-    defaultLayout: "main"
-  })
-);
-app.set("view engine", "handlebars");
+app.engine('handlebars', exphbs({defaultLayout: "main"}));
+app.set('view engine', 'handlebars');
 
-//connecting to MongoDB
-const MONGODB_URI =
-  process.env.MONGODB_URI || "mongodb://localhost/news-scraper";
-mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
+mongoose.connect(MONGODB_URI);
 
-var db = mongoose.connection;
-db.on("error", console.error.bind(console, "connection error:"));
-db.once("open", function() {
-  console.log("Connected to Mongoose!");
-});
+//Get route
 
+app.get("/scrape", function(req, res) {
+    axios.get("https://www.npr.org/sections/news/").then(function(response) {
+        var $ = cheerio.load(response.data);
+    })
+})
 
-//Create localhost port
-var port = process.env.PORT || 3000;
-app.listen(port, function() {
-  console.log("Listening on PORT " + port);
+app.listen(PORT, function() {
+  console.log("Listening on PORT " + PORT);
 });
