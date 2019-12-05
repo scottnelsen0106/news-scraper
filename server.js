@@ -53,10 +53,36 @@ app.get("/scrape", function(req, res) {
           .find("p.teaser")
           .text();
 
-          console.log(result);
+          db.Article.create(result)
+          .then(function(dbArticle) {
+            console.log(dbArticle)
+          })
+
+          // console.log(result);
         })
         
     })
+})
+
+app.get("/articles", function(req, res) {
+  db.Article.find({})
+  .then(function(dbArticle) {
+    res.json(dbArticle)
+  })
+})
+
+app.get("/articles/:id", function(req, res) {
+  db.Article.findOne({_id: req.params.id })
+  .then(function(dbArticle) {
+    res.json(dbArticle);
+  })
+})
+
+app.post("/articles/:id", function(req, res) {
+  db.Note.create(req.body)
+  .then(function(dbNote) {
+    return db.Article.findOneAndUpdate({_id: req.params.id }, { note: dbNote._id }, { new: true });
+  })
 })
 
 app.listen(PORT, function() {
