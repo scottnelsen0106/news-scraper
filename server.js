@@ -5,6 +5,7 @@ var bodyParser = require("body-parser");
 var axios = require("axios");
 var cheerio = require("cheerio");
 var db = require("./models");
+var path = require("path");
 
 var PORT = process.env.PORT || 8000;
 
@@ -33,6 +34,10 @@ mongoose.connect(MONGODB_URI, {
 });
 
 //Get route
+
+ app.get("/", (req, res) => {
+   res.render("./index");
+ });
 
 app.get("/scrape", function(req, res) {
     axios.get("https://www.npr.org").then(function(response) {
