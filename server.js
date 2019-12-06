@@ -28,10 +28,7 @@ var exphbs = require("express-handlebars");
 app.engine('handlebars', exphbs({defaultLayout: "main"}));
 app.set('view engine', 'handlebars');
 
-mongoose.connect(MONGODB_URI, {
-  useCreateIndex: true,
-  useNewUrlParser: true
-});
+mongoose.connect(MONGODB_URI);
 
 //Get route
 
